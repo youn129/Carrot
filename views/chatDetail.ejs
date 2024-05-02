@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">
+</head>
+<body class="grey-bg">
+    <% include('nav.ejs') %> 
+
+    <!-- <%= JSON.stringify(result) %>
+    <%= JSON.stringify(messages) %> -->
+
+    <div class="detail-bg">
+      <div class="chat-screen">
+        <% messages.forEach(message => { %>
+          <% const isMine = message.senderId === userId; %>
+          <div class="chat-box <%= isMine ? 'mine' : 'other-user' %>">
+            <span><%= message.chatContent %></span>
+          </div>
+        <% }) %>
+        <!-- 이전 메시지를 표시하기 위한 빈 div -->
+        <div class="previous-messages"></div>
+      </div>
+  </div>
+  <div class="chat-form">
+      <input name="chat-send" class="chat-input">
+      <button class="chat-button">전송</button>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.7.2/client-dist/socket.io.min.js"></script>
+    <script>
+      const socket = io(); 
+      socket.emit('ask-join', '<%= result._id %>')
+      // 처음 접속할 때 이전 메시지 요청
+      socket.emit('request-previous-messages', '<%= result._id %>');
+
+      document.querySelector('.chat-button').addEventListener('click', function() {
+        let 채팅입력 = document.querySelector('.chat-input').value;
+        // 이미 로그인한 사용자의 ID를 함께 전송
+        socket.emit('message-send', 
+        { 
+            msg: 채팅입력, 
+            room: '<%= result._id %>', 
+            senderId: '<%= userId %>',
+            partnerId: '<%= partnerId %>' // 수정된 부분: 상대방 ID도 함께 전송
+        });
+
+        document.querySelector('.chat-input').value = ''; // 입력 후에 입력창 비우기
+    });
+
+
+      // 이전 메시지를 받아와서 화면에 표시하는 함수
+      socket.on('previous-messages', (messages) => {
+        const chatScreen = document.querySelector('.chat-screen');
+        // 이전 메시지를 화면에 추가하기 전에 기존의 메시지를 유지합니다.
+        // 이전 메시지를 화면에 추가하기 전에 기존의 메시지를 모두 삭제합니다.
+        chatScreen.innerHTML = '';
+        messages.forEach(message => {
+          const isMine = message.senderId === '<%= userId %>';
+          const existingMessage = chatScreen.querySelector(`[data-message-id="${message._id}"]`);
+          if (!existingMessage) {
+            const chatBox = document.createElement('div');
+            chatBox.classList.add('chat-box');
+            chatBox.classList.add(isMine ? 'mine' : 'other-user');
+            chatBox.setAttribute('data-message-id', message._id);
+            chatBox.innerHTML = `<span>${message.chatContent}</span>`;
+            chatScreen.appendChild(chatBox);
+          }
+        });
+        chatScreen.scrollTop = chatScreen.scrollHeight;
+      });
+
+      // 새로운 메시지를 실시간으로 받아서 화면에 추가하는 함수
+      socket.on('message-broadcast', (data) => {
+            addMessageToScreen(data);
+      });
+
+      // 채팅창에 메시지를 추가하는 함수
+      function addMessageToScreen(data) {
+        const chatScreen = document.querySelector('.chat-screen');
+        const isMine = data.senderId === '<%= userId %>'; // 유저가 보낸 메시지인지 확인
+
+        const chatBox = document.createElement('div');
+        chatBox.classList.add('chat-box');
+        chatBox.classList.add(isMine ? 'mine' : 'other-user');
+
+        chatBox.innerHTML = `<span>${data.chatContent}</span>`;
+        chatScreen.appendChild(chatBox);
+        chatScreen.scrollTop = chatScreen.scrollHeight; // 스크롤을 맨 아래로 이동
+      }
+    </script>
+  </body>
+</html>
