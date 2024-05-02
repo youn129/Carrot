@@ -1,0 +1,149 @@
+body, h1, h2, h3, p, ul, li {
+  margin: 0;
+  padding: 0;
+  } 
+  .nav {
+    display: flex;
+    padding: 15px;
+    align-items: center;
+    background : white;
+  }
+  .nav a {
+    margin-right: 10px;
+  }
+  .logo {
+    font-weight: bold;
+  }
+  a {
+    text-decoration-line: none;
+  /*   text-decoration-line: underline; */
+  /*   text-decoration-line: overline; */
+  /*   text-decoration-line: line-through; */
+  /*   text-decoration-line: underline line-through overline; */
+  }
+  .grey-bg {
+    background: #eee;
+  }
+  .white-bg {
+    background: white;
+    margin: 20px;
+    border-radius: 5px;
+  }
+  .list-box {
+    padding : 10px;
+    border-bottom: 1px solid#eee;
+  }
+  .list-box h4{
+    font-size: 16px;
+    margin: 5px;
+  }
+  .list-box p {
+    font-size: 13px;
+    margin: 5px;
+    color: grey;
+  }
+  input,div {
+    box-sizing: border-box;
+  }
+  .form-box {
+    background : white;
+    padding : 25px;
+    margin: 20px;
+    border-radius: 8px;
+  }
+  .form-box input {
+    padding : 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  .form-box button {
+    padding: 10px;
+    border : none;
+    background : lightgrey;
+    border-radius: 5px;
+  }
+  .detail-bg {
+    background: white;
+    padding: 15px;
+    margin-top: 10px;
+  }
+  .second {
+    width: 300px;
+    margin-bottom: 20px;
+    padding: 50px;
+    border-width: 10px;
+  }
+  .btn-danger {
+    opacity : 0.8
+  }
+  .btn-warning {
+    opacity : 0.8
+  }
+  .search {
+    margin : 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    margin-right: 10px; /* 입력창과 버튼 사이의 간격 조절 */
+  }
+
+  .search-send {
+      padding: 10px 20px;
+      background-color: #ff4500; /* 버튼 배경색 */
+      color: #fff; /* 버튼 텍스트 색상 */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+
+  /* 버튼 호버 효과 */
+  .search-send:hover {
+      background-color: red; /* 호버 시 배경색 변경 */
+  }
+  
+  .chat-screen { width: 100%; }
+  
+  .chat-box {
+    margin-top: 15px;
+    display: flex;
+    max-width: 80%; /* 최대 너비 설정 */
+  }
+  
+  .chat-box span {
+    padding: 10px;
+    border-radius: 5px;
+    word-wrap: break-word; /* 긴 텍스트가 넘치지 않도록 줄 바꿈 처리 */
+    max-width: 100%; /* 최대 너비 설정 */
+  }
+  
+  .mine, .sender {
+    justify-content: flex-end;
+  }
+
+  .mine span, .sender span {
+      background: #cfe2ff; /* 채팅 내용의 배경색 */
+  }
+    
+  .other-user, .receiver {
+      justify-content: flex-start;
+  }
+
+  .other-user span, .receiver span {
+      background: #f0f0f0; /* 채팅 내용의 배경색 */
+  }
+
+  .chat-input {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .chat-button {
+    padding: 10px;
+    border : none;
+    background : lightgrey;
+    border-radius: 5px;
+  }
