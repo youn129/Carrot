@@ -23,11 +23,16 @@
             <% } %> 
             
         </div>
+        <% if (유저) { %>
         <form action="/comment" method="POST">
             <input name="content" class="form-control" style="margin: 10px; width : 40%;">
             <input name="parentId" class="form-control" value="<%= result._id %>" style="display: none;">
             <button type="submit" class="form-control; search-send" style="margin-top: 10px; width: fit-content;">댓글달기</button>
         </form>
+        <% }
+        else { %>
+            <p>댓글은 <a href="/login">로그인 혹은 회원가입</a>후 작성할 수 있어요.</p>
+        <% } %>
     </div> 
     
     
