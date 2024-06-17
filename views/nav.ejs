@@ -9,19 +9,76 @@
 </head>
 <body class="grey-bg">
     <div class="nav">
-        <a class="logo" href="/">AppleForum</a>
+        <a class="logo" href="/">Carrot</a>
         <a href="/list/1">list</a>
         <a href="/write">write</a>
         <div style="display: flex; margin-left: auto;">
-            <a href="/login">login</a>
-            <a href="/register">sign up</a>
-            <a style="margin-left: 10px;" href="/mypage">mypage</a>
+            <a href="/login"><button class="btn btn-danger">Sign in</button></a>
+            <a style="margin-left: 10px;" href="/mypage"><button class="btn btn-warning">MyPage</button></a>
+            <form action="/logout" method="GET">
+                <button type="submit" class="btn btn-secondary">LogOut</button>
+            </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    
+    <div id="채팅알림"></div>
 
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('chatChange', function(data) {
+            console.log('새로운 채팅 도착:', data); // 데이터를 제대로 받았는지 콘솔에 출력
+            showChatNotification(data);
+        });
+
+        function showChatNotification(채팅알림) {
+            // 알림 박스 생성
+            let notificationBox = document.createElement('div');
+            notificationBox.classList.add('chat-notification');
+
+            // 날짜 요소 추가
+            let dateElement = document.createElement('div');
+            dateElement.classList.add('date');
+            dateElement.innerText = `Date: ${new Date(채팅알림.date).toLocaleString()}`;
+
+            // 발신자 요소 추가
+            let senderElement = document.createElement('div');
+            senderElement.classList.add('senderId');
+            senderElement.innerText = `Sender: ${채팅알림.senderId}`;
+
+            // 채팅 내용 요소 추가
+            let contentElement = document.createElement('div');
+            contentElement.classList.add('chatContent');
+            contentElement.innerText = 채팅알림.chatContent;
+
+            // 알림 박스에 요소들 추가
+            notificationBox.appendChild(dateElement);
+            notificationBox.appendChild(senderElement);
+            notificationBox.appendChild(contentElement);
+
+            console.log('알림 박스 생성:', notificationBox); // 알림 박스 생성 확인
+
+            // 알림 박스를 화면에 추가
+            document.body.appendChild(notificationBox);
+            console.log('알림 박스 추가됨'); // 알림 박스 추가 확인
+
+            // 강제로 리플로우를 발생시켜 애니메이션 적용
+            notificationBox.offsetHeight;
+            notificationBox.classList.add('show');
+            console.log('알림 박스에 show 클래스 추가됨'); // show 클래스 추가 확인
+
+            // 몇 초 후에 알림 박스를 제거
+            setTimeout(() => {
+                notificationBox.classList.remove('show');
+                setTimeout(() => {
+                    notificationBox.remove();
+                    console.log('알림 박스 제거됨'); // 알림 박스 제거 확인
+                }, 500); // 애니메이션이 끝나는 시간과 맞춤
+            }, 5000); // 5초 후에 제거
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>
-
