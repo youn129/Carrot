@@ -4,7 +4,6 @@ const { MongoClient, ObjectId } = require('mongodb');
 const methodOverride = require('method-override');
 const bcrypt = require('bcrypt');
 const { createServer } = require('http');
-// const chatNotificationRouter = require('./routes/chatNotification');
 const { Server } = require('socket.io');
 const server = createServer(app);
 const io = new Server(server);
@@ -16,7 +15,6 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use('/chat', chatNotificationRouter);
 
 const session = require('express-session');
 const passport = require('passport');
