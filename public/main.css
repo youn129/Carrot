@@ -6,7 +6,7 @@ body, h1, h2, h3, p, ul, li {
     display: flex;
     padding: 15px;
     align-items: center;
-    background : white;
+    background : #ffefd5;
   }
   .nav a {
     margin-right: 10px;
@@ -21,8 +21,17 @@ body, h1, h2, h3, p, ul, li {
   /*   text-decoration-line: line-through; */
   /*   text-decoration-line: underline line-through overline; */
   }
+
+  .bottom-center {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      text-align: center;
+  }
   .grey-bg {
-    background: #eee;
+    background: #ffe4e1;
   }
   .white-bg {
     background: white;
@@ -75,6 +84,9 @@ body, h1, h2, h3, p, ul, li {
     margin-bottom: 20px;
     padding: 50px;
     border-width: 10px;
+  }
+  .btn-success {
+    opacity : 0.8
   }
   .btn-danger {
     opacity : 0.8
@@ -147,3 +159,51 @@ body, h1, h2, h3, p, ul, li {
     background : lightgrey;
     border-radius: 5px;
   }
+  figure {
+    text-align: center;
+    margin-top: 50px; /* 페이지 상단에서 떨어지는 여백 조절 */
+  }
+  figcaption {
+      font-size: 1.2rem; /* 텍스트 크기 조절 */
+      margin-top: 20px; /* 타이틀 아래 여백 조절 */
+      text-align: left; /* 텍스트를 왼쪽 정렬 */
+      font-weight: bold; /* 텍스트를 두껍게 */
+  }
+  p {
+      font-size: 1.5rem; /* 텍스트 크기 조절 */
+      font-weight: bold; /* 텍스트를 두껍게 */
+  }
+  /* 알림 박스 스타일 */
+  .chat-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 10000; /* 우선순위를 높임 */
+    opacity: 0;
+    transform: translateY(100px);
+    transition: all 0.5s;
+}
+
+.chat-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delete-btn {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #ff6347; /* 삭제 버튼 배경색 */
+  color: #fff; /* 삭제 버튼 텍스트 색상 */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #d14836; /* 호버 시 배경색 변경 */
+}
