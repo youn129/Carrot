@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="/main.css" rel="stylesheet">
+</head>
+<body class="grey-bg">
+    <% include('nav.ejs') %> 
+
+    <div class="detail-bg">
+        <div class="chat-screen">
+            <% messages.forEach(message => { %>
+                <% const isMine = message.senderId === userId; %>
+                <div class="chat-box <%= isMine ? 'mine' : 'other-user' %>" data-message-id="<%= message._id %>">
+                    <span><%= message.chatContent %></span>
+                    <% if (isMine) { %>
+                        <button class="delete-btn" data-message-id="<%= message._id %>">삭제</button>
+                    <% } %>
+                </div>
+            <% }) %>
+            <div class="previous-messages"></div>
+        </div>
+    </div>
+    <div class="chat-form">
+        <input name="chat-send" class="chat-input">
+        <button class="chat-button">전송</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.7.2/client-dist/socket.io.min.js"></script>
+    <script>
+        const socket = io(); 
+        socket.emit('ask-join', '<%= result._id %>');
+
+        socket.emit('request-previous-messages', '<%= result._id %>');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const messageId = event.target.getAttribute('data-message-id');
+                    const roomId = '<%= result._id %>';
+                    socket.emit('delete-message', { messageId: messageId, roomId: roomId });
+                }
+            });
+        });
+
+        socket.on('message-deleted', ({ messageId, roomId }) => {
+            const chatBox = document.querySelector(`.chat-box[data-message-id="${messageId}"]`);
+            if (chatBox) {
+                chatBox.innerHTML = '<span>메시지가 삭제되었습니다.</span>';
+            }
+        });
+
+        document.querySelector('.chat-button').addEventListener('click', function() {
+            let 채팅입력 = document.querySelector('.chat-input').value;
+            socket.emit('message-send', 
+            { 
+                msg: 채팅입력, 
+                room: '<%= result._id %>', 
+                senderId: '<%= userId %>',
+                partnerId: '<%= partnerId %>'
+            });
+
+            document.querySelector('.chat-input').value = ''; 
+        });
+
+        socket.on('previous-messages', (messages) => {
+            const chatScreen = document.querySelector('.chat-screen');
+            chatScreen.innerHTML = ''; 
+            messages.forEach(message => {
+                const isMine = message.senderId === '<%= userId %>';
+                const chatBox = document.createElement('div');
+                chatBox.classList.add('chat-box');
+                chatBox.classList.add(isMine ? 'mine' : 'other-user');
+                chatBox.setAttribute('data-message-id', message._id);
+                chatBox.innerHTML = `<span>${message.chatContent}</span>`;
+                if (isMine) {
+                    chatBox.innerHTML += `<button class="delete-btn" data-message-id="${message._id}">삭제</button>`;
+                }
+                chatScreen.appendChild(chatBox);
+            });
+            chatScreen.scrollTop = chatScreen.scrollHeight;
+        });
+
+        socket.on('message-broadcast', (data) => {
+            addMessageToScreen(data);
+        });
+
+        function addMessageToScreen(data) {
+            const chatScreen = document.querySelector('.chat-screen');
+            const isMine = data.senderId === '<%= userId %>'; 
+            const chatBox = document.createElement('div');
+            chatBox.classList.add('chat-box');
+            chatBox.classList.add(isMine ? 'mine' : 'other-user');
+            chatBox.setAttribute('data-message-id', data._id);
+            chatBox.innerHTML = `<span>${data.chatContent}</span>`;
+            if (isMine) {
+                chatBox.innerHTML += `<button class="delete-btn" data-message-id="${data._id}">삭제</button>`;
+            }
+            chatScreen.appendChild(chatBox);
+            chatScreen.scrollTop = chatScreen.scrollHeight;
+        }
+    </script>
+</body>
+</html>
