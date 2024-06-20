@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { ObjectId } = require('mongodb');
-const upload = require('./../upload.js');
-let connectDB = require('./../database.js');
+const upload = require('../../upload.js');
+let connectDB = require('../../database.js');
 
 let db;
 connectDB.then((client)=>{

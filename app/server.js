@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 const methodOverride = require('method-override');
 const bcrypt = require('bcrypt');
@@ -13,8 +14,10 @@ require('dotenv').config();
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const session = require('express-session');
 const passport = require('passport');
@@ -361,10 +364,10 @@ app.get('/stream/list', (요청, 응답) => {
     }
 });
 
-app.use('/shop', require('./routes/shop.js'));
-app.use('/board/sub', require('./routes/board.js'));
-app.use('/login', require('./routes/login.js'));
-app.use('/edit', require('./routes/edit.js'));
-app.use('/list', require('./routes/list.js'));
-app.use('/register', require('./routes/register.js'));
-app.use('/chat', require('./routes/chat.js'));
+app.use('/shop', require('./src/routes/shop.js'));
+app.use('/board/sub', require('./src/routes/board.js'));
+app.use('/login', require('./src/routes/login.js'));
+app.use('/edit', require('./src/routes/edit.js'));
+app.use('/list', require('./src/routes/list.js'));
+app.use('/register', require('./src/routes/register.js'));
+app.use('/chat', require('./src/routes/chat.js'));
