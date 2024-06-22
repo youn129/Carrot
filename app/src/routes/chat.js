@@ -104,7 +104,13 @@ router.get('/detail/:id', 로그인, async (요청, 응답) => {
             });
             messages.senderId = senderId;
 
-            응답.render('chatDetail.ejs', { result: result, messages: messages, userId: userId, partnerId: 요청.query.partner, senderId: senderId });
+            응답.render('chatDetail.ejs', { 
+                result: result, 
+                messages: messages, 
+                userId: userId, 
+                partnerId: 요청.query.partner, 
+                senderId: senderId 
+            });
         } else {
             console.log('채팅방을 찾을 수 없습니다.');
         }

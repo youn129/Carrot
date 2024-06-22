@@ -59,6 +59,17 @@
 
             console.log('알림 박스 생성:', notificationBox); // 알림 박스 생성 확인
 
+            // 클릭 이벤트 추가
+            notificationBox.addEventListener('click', () => {
+                console.log('알림 박스 클릭됨:', 채팅알림.documentId); // 클릭 시 출력 확인
+                if (채팅알림.documentId) {
+                    window.location.href = `/chat/detail/${채팅알림.documentId}`;
+                } else {
+                    console.error('documentId가 undefined입니다:', 채팅알림);
+                }
+            });
+
+
             // 알림 박스를 화면에 추가
             document.body.appendChild(notificationBox);
             console.log('알림 박스 추가됨'); // 알림 박스 추가 확인
