@@ -73,6 +73,23 @@ router.get('/list', async (req, res) => {
             memberMap[member._id.toString()] = member.username;
         });
 
+        for (let chatroom of chatrooms) {
+            const recentMessage = await db.collection('message').find({
+                documentId: chatroom._id.toString()
+            }).sort({ date: -1 }).limit(1).toArray();
+
+            chatroom.recentMessage = recentMessage.length > 0 ? recentMessage[0].chatContent : 'No messages yet';
+
+            const unreadCount = await db.collection('message').countDocuments({
+                documentId: chatroom._id.toString(),
+                senderId: { $ne: userId },
+                read: false
+            });
+
+            chatroom.unreadCount = unreadCount;
+        }
+        
+
         chatrooms = chatrooms.map(chatroom => {
             chatroom.memberNames = chatroom.member.map(id => memberMap[id.toString()]);
             return chatroom;
@@ -95,6 +112,12 @@ router.get('/detail/:id', 로그인, async (요청, 응답) => {
         let result = await db.collection('chatroom').findOne({ _id: roomId });
 
         if (result) {
+
+            await db.collection('message').updateMany(
+                { documentId: 요청.params.id, senderId: { $ne: userId }, read: false },
+                { $set: { read: true } }
+            );
+
             let messages = await db.collection('message').find({ documentId: 요청.params.id }).toArray();
             messages = messages.map(message => {
                 if (!Array.isArray(message.senderId)) {

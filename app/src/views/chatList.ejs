@@ -15,12 +15,18 @@
                     <a href="/chat/detail/<%= result[i]._id %>?senderId=<%= userId %>&partnerId=<%= (result[i].member[0] === userId ? result[i].member[1] : result[i].member[0]) %>">
                         채팅방 <%= i %>
                     </a>
+                    <% if (result[i].unreadCount > 0) { %>
+                        <span class="badge badge-danger"><%= result[i].unreadCount %></span>
+                    <% } %>
                 </h4>
                 <p>
                     <a href="/chat/detail/<%= result[i]._id %>?senderId=<%= userId %>&partnerId=<%= (result[i].member[0] === userId ? result[i].member[1] : result[i].member[0]) %>">
                         <%= (result[i].member[0] === userId ? result[i].memberNames[1] : result[i].memberNames[0]) %>
                     </a>
-                </p>    
+                </p> 
+                <p>
+                    최근 메시지: <%= result[i].recentMessage %>
+                </p>   
                 <form action="/chat/delete/<%= result[i]._id %>" method="post" style="display:inline;">
                     <input type="hidden" name="userId" value="<%= userId %>">
                     <button type="submit" class="btn btn-danger">삭제</button>
