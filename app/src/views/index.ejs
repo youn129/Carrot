@@ -4,24 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/main.css" rel="stylesheet">
 </head>
 <body class="grey-bg">
     <%- include('nav.ejs') %>
     <figure>
         <blockquote class="blockquote">
-          <h1><mark>Carrot</mark> 나의, 우리의, 모두의 행복한 커뮤니티</h1>
+          <h1><mark>Carrot</mark> 부동산 매물 거래 커뮤니티</h1>
         </blockquote>
         <figcaption class="blockquote-footer">
-          게시물을 <cite title="Source Title">실시간 채팅과 함께 </cite>당신의 삶을 공유해보아요
+          게시물을 <cite title="Source Title">실시간 채팅과 함께 </cite>당신의 삶을 공유해봐요
         </figcaption>
-      </figure>
-      <img src="/Images of people tal.jpg" style="max-width: 35%; float: right; margin-right: 80px;">
-      <p>안전한 회원 가입, 게시물 댓글, 친한 회원들의 채팅공간</p>
-      <div class="bottom-center">
-        <a href="/register"><button class="btn btn-success btn-lg btn-block">Create your account</button></a>
+    </figure>
+    <div class="image-container">
+        <img src="/Images of people tal.jpg" style="max-width: 100%;">
     </div>
+    
+    <p>안전한 회원 가입, 게시물 댓글, 채팅공간</p>
+    
+    <form id="checkbox-form">
+        <h1>Seoul Real Estate Data</h1>
+        <div id="checkbox-container" class="mb-3">
+            <% for (let i = 0; i < seoulDistrictCodes.length; i++) { %>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="checkbox-<%= seoulDistrictCodes[i].code %>" value="<%= seoulDistrictCodes[i].code %>">
+                    <label class="form-check-label" for="checkbox-<%= seoulDistrictCodes[i].code %>"><%= seoulDistrictCodes[i].name %></label>
+                </div>
+            <% } %>
+        </div>
+        <button type="submit" class="btn btn-primary">데이터 조회하기</button>
+    </form>
+    <div id="sse-data-container" class="data-container">
+        <!-- 여기에 SSE로 받는 실시간 데이터가 동적으로 추가됩니다 -->
+    </div>
+    <div id="query-data-container" class="data-container">
+        <!-- 여기에 데이터 조회하기 버튼을 눌렀을 때 데이터가 동적으로 추가됩니다 -->
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+        const checkboxForm = document.getElementById('checkbox-form');
+        const sseDataContainer = document.getElementById('sse-data-container');
+        const queryDataContainer = document.getElementById('query-data-container');
+        let selectedCodes = []; // 선택된 체크박스 코드를 저장할 배열
+
+        checkboxForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const checkboxes = document.querySelectorAll('#checkbox-container input[type="checkbox"]');
+            selectedCodes = Array.from(checkboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            if (selectedCodes.length > 0) {
+                try {
+                    const response = await fetch(`/getRealEstateData/detailRealEstate?codes=${selectedCodes.join(',')}`);
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    displayData(data, queryDataContainer);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    queryDataContainer.innerHTML = '<p>데이터를 불러오는 중 오류가 발생했습니다.</p>';
+                }
+            } else {
+                queryDataContainer.innerHTML = '<p>선택된 지역이 없습니다.</p>';
+            }
+        });
+
+        function displayData(data, container) {
+            container.innerHTML = ''; // 기존 데이터 초기화
+
+            if (Array.isArray(data)) {
+                data.forEach(item => {
+                    const box = createDataBox(item);
+                    container.appendChild(box);
+                });
+            } else if (typeof data === 'object') {
+                const box = createDataBox(data);
+                container.appendChild(box);
+            } else {
+                console.error('Invalid data format:', data);
+            }
+        }
+
+        function createDataBox(data) {
+            const box = document.createElement('div');
+            box.className = 'estate-box';
+            if (data.fromSSE) {
+                box.classList.add('sse-estate-box'); // SSE 데이터를 구분하기 위해 클래스 추가
+            }
+            box.innerHTML = `
+                <h4>${data.중개사소재지}, ${data.법정동}, ${data.아파트}, ${data.전용면적}m&sup2;, ${data.거래금액}만원</h4>
+                <p>거래유형: ${data.거래유형}, ${data.월}월 ${data.일}일</p>
+            `;
+            box.addEventListener('click', () => {
+                const regionCode = data.지역코드; // 데이터 객체의 실제 속성에 맞게 수정
+                if (regionCode) {
+                    window.location.href = `/getRealEstateData/detailRealEstate?codes=${regionCode}`;
+                }
+            });
+            return box;
+        }
+
+        // SSE 연결
+        const eventSource = new EventSource('/getRealEstateData/sse');
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            data.fromSSE = true; // SSE에서 온 데이터임을 표시하기 위해 프로퍼티 추가
+            const box = createDataBox(data);
+            sseDataContainer.innerHTML = ''; // 기존 데이터 초기화
+            sseDataContainer.appendChild(box);
+        };
+
+        // SSE 데이터를 10초마다 업데이트
+        setInterval(() => {
+            // SSE 데이터는 이미 eventSource가 관리하고 있으므로 추가적인 업데이트는 필요하지 않음
+        }, 10000);
+
+        // 체크박스 클릭 이벤트 처리
+        checkboxForm.addEventListener('click', (event) => {
+            if (event.target.type === 'checkbox') {
+                const checkbox = event.target;
+                const isChecked = checkbox.checked;
+                const value = checkbox.value;
+
+                if (isChecked) {
+                    selectedCodes.push(value); // 선택된 코드 배열에 추가
+                } else {
+                    selectedCodes = selectedCodes.filter(code => code !== value); // 선택 해제된 코드 제거
+                }
+            }
+        });
+    </script>
 </body>
 </html>
