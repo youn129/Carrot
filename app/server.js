@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios'); // axios 모듈 추가
 const app = express();
 const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
@@ -9,6 +10,9 @@ const { Server } = require('socket.io');
 const server = createServer(app);
 const io = new Server(server);
 
+const { router: getRealEstateDataRouter } = require('./src/routes/getRealEstateData.js');
+const seoulDistrictCodes = require('./src/data/seoulDistrictCodes.js');
+
 require('dotenv').config();
 
 app.use(methodOverride('_method'));
@@ -18,6 +22,8 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/getRealEstateData', getRealEstateDataRouter);
+
 
 const session = require('express-session');
 const passport = require('passport');
@@ -83,6 +89,7 @@ connectDB.then((client) => {
     console.error('DB 연결 오류:', err);
 });
 
+
 if (process.env.NODE_ENV === 'development') {
     console.log('현재는 개발 환경입니다.');
 }
@@ -102,9 +109,14 @@ function 아이디비번체크(요청, 응답, next) {
     }
 }
 
+
 app.get('/', (요청, 응답) => {
-    응답.render('index.ejs');
+    응답.render('index.ejs', { seoulDistrictCodes });
 });
+
+// app.get('/detailRealEstate', (요청, 응답) => {
+//     응답.render('detailRealEstate.ejs');
+// });
 
 app.get('/about', (요청, 응답) => {
     응답.sendFile(__dirname + '/about.html');
