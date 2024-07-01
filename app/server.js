@@ -51,17 +51,16 @@ io.use(sharedSession(sessionMiddleware, {
 }));
 
 const upload = require('./upload.js');
-let connectDB = require('./database.js');
+const connectDBPromise = require('./database.js'); // 변경: 프로미스를 반환하는 방식으로 수정
 
 let db;
 let postListener;
 let chatListener;
 
-connectDB.then((client) => {
-    console.log('DB연결성공');
+connectDBPromise.then((client) => {
     db = client.db('forum');
     server.listen(process.env.PORT, () => {
-        console.log('http://localhost8080 에서 서버 실행중');
+        console.log('서버가 포트 ' + process.env.PORT + '에서 실행 중입니다.');
     });
 
     const postStream = [{ $match: { operationType: 'insert' } }];
